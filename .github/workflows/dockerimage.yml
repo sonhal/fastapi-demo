@@ -23,6 +23,6 @@ jobs:
       run: docker build . --file Dockerfile --tag datnor-demo-app:$(date +%s)
     - name: Publish Docker image
       run: |
-        cat ${{ secrets.GITHUB_TOKEN }} | docker login -u sonhal --password-stdin
+        docker login -u sonhal -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
         docker tag datnor-demo-app:$(date +%s) docker.pkg.github.com/sonhal/fastapi-demo/datnor-demo-app:0.0.1
         docker push docker.pkg.github.com/sonhal/fastapi-demo/datnor-demo-app:0.0.1
