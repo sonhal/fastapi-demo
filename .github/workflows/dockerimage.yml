@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 env:
-  IMAGE: docker.pkg.github.com/sonhal/fastapi-demo/master:${{ github.sha }}
+  IMAGE: sonhal/fastapi-demo:${{ github.sha }}
 
 
 jobs:
@@ -24,33 +24,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build --tag ${IMAGE} .
+      run: docker build --tag ${IMAGE} --tag latest .
     - name: Publish Docker image
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        DOCKER_HUB_AT: ${{ secrets.DOCKER_HUB_AT }}
 
       run: |
-        docker login docker.pkg.github.com -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
+        cat ${DOCKER_HUB_AT} | docker login --username sonhal --password-stdin
         docker push ${IMAGE}
-  
-  deploy:
-    needs: build
-    
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: create keyfile
-        run: |
-          cat ${SSH_KEY} > server-key
-          chmod 600 server-key
-      - name: Deploy to server
-        env:
-          SSH_KEY: ${{ secrets.WEB_SERVER_KEY }}
-          SERVER_ADR: ${{ secrets.SERVER_ADR }}
-        run: |
-          ssh -oStrictHostKeyChecking=no -v -C -i server-key centos@${SERVER_ADR} "$docker stop sonhal/fastapi-demo/master && docker rm sonhal/fastapi-demo/master && docker pull docker.pkg.github.com/sonhal/fastapi-demo/master docker run -d -p 80:80 sonhal/fastapi-demo/master"
-
-    
           
           
           
