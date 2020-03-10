@@ -4,6 +4,10 @@ on:
   push:
     branches: [ master ]
 
+
+env:
+  IMAGE: docker.pkg.github.com/datnor-demo-app/master:${{ github.sha }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -20,9 +24,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag datnor-demo-app:$(date +%s)
+      run: docker build --tag ${IMAGE} .
     - name: Publish Docker image
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       run: |
-        docker login -u sonhal -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
-        docker tag datnor-demo-app:$(date +%s) docker.pkg.github.com/sonhal/fastapi-demo/datnor-demo-app:0.0.1
-        docker push docker.pkg.github.com/sonhal/fastapi-demo/datnor-demo-app:0.0.1
+        docker login docker.pkg.github.com -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
+        docker push ${IMAGE}
+          
+          
+          
