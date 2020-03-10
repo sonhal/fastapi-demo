@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 env:
-  IMAGE: sonhal/fastapi-demo:${{ github.sha }}
+  IMAGE: sonhal/fastapi-demo
 
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build --tag ${IMAGE} --tag latest .
+      run: docker build --tag ${IMAGE}:${{ github.sha }} --tag ${IMAGE}:latest .
     - name: Publish Docker image
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
