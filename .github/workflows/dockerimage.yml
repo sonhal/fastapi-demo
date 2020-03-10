@@ -31,7 +31,7 @@ jobs:
         DOCKER_HUB_AT: ${{ secrets.DOCKER_HUB_AT }}
 
       run: |
-        cat ${DOCKER_HUB_AT} | docker login --username sonhal --password-stdin
+        docker login --username sonhal --password ${DOCKER_HUB_AT}
         docker push ${IMAGE}
           
           
