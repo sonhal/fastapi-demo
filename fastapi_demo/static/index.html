@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fast API page</title>
+</head>
+<body>
+<script>
+
+     async function setVal(response) {
+         document.getElementById("p1").innerHTML = await response.text();
+     }
+
+    const request = new Request('http://localhost:8000', {method: 'GET'});
+    fetch(request)
+  .then(response => {
+       setVal();
+    if (response.status === 200) {
+      setVal(response)
+    } else {
+      throw new Error('Something went wrong on api server!');
+    }
+  })
+  .then(response => {
+    console.debug(response);
+    // ...
+  }).catch(error => {
+    console.error(error);
+  });
+
+</script>
+<h1>Test page</h1>
+<p id="p1">test content</p>
+</body>
+</html>
