@@ -48,11 +48,8 @@ jobs:
           SSH_KEY: ${{ secrets.WEB_SERVER_KEY }}
           SERVER_ADR: ${{ secrets.SERVER_ADR }}
         run: |
-          ssh -i server-key centos@${SERVER_ADR}
-          docker stop sonhal/fastapi-demo/master
-          docker rm sonhal/fastapi-demo/master
-          docker pull docker.pkg.github.com/sonhal/fastapi-demo/master:af5bfb0fc4b79fd18f2901eb5535ca38c189d11f
-          docker run -d -p 80:80 sonhal/fastapi-demo/master
+          ssh -oStrictHostKeyChecking=no -v -C -i server-key centos@${SERVER_ADR} "$docker stop sonhal/fastapi-demo/master && docker rm sonhal/fastapi-demo/master && docker pull docker.pkg.github.com/sonhal/fastapi-demo/master docker run -d -p 80:80 sonhal/fastapi-demo/master"
+
     
           
           
