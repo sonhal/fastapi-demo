@@ -32,6 +32,23 @@ jobs:
       run: |
         docker login docker.pkg.github.com -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
         docker push ${IMAGE}
+  
+  deploy:
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy to server
+        env:
+          SSH_KEY: ${{ secrets.WEB_SERVER_KEY }}
+          SERVER_ADR: ${{ secrets.SERVER_ADR }}
+        run: |
+          ssh -i ${SSH_KEY} centos@${SERVER_ADR}
+          docker stop sonhal/fastapi-demo/master
+          docker rm sonhal/fastapi-demo/master
+          docker pull docker.pkg.github.com/sonhal/fastapi-demo/master:af5bfb0fc4b79fd18f2901eb5535ca38c189d11f
+          docker run -d -p 80:80 sonhal/fastapi-demo/master
+    
           
           
           
