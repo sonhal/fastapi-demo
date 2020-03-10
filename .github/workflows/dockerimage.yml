@@ -4,9 +4,9 @@ on:
   push:
     branches: [ master ]
 
-
 env:
-  IMAGE: docker.pkg.github.com/datnor-demo-app/master:${{ github.sha }}
+  IMAGE: docker.pkg.github.com/sonhal/datnor-demo-app/master:${{ github.sha }}
+
 
 jobs:
   test:
