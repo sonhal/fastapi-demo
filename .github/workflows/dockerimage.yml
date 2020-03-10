@@ -34,16 +34,21 @@ jobs:
         docker push ${IMAGE}
   
   deploy:
+    needs: build
     
     runs-on: ubuntu-latest
     
     steps:
+      - name: create keyfile
+        run: |
+          cat ${SSH_KEY} > server-key
+          chmod 600 server-key
       - name: Deploy to server
         env:
           SSH_KEY: ${{ secrets.WEB_SERVER_KEY }}
           SERVER_ADR: ${{ secrets.SERVER_ADR }}
         run: |
-          ssh -i ${SSH_KEY} centos@${SERVER_ADR}
+          ssh -i server-key centos@${SERVER_ADR}
           docker stop sonhal/fastapi-demo/master
           docker rm sonhal/fastapi-demo/master
           docker pull docker.pkg.github.com/sonhal/fastapi-demo/master:af5bfb0fc4b79fd18f2901eb5535ca38c189d11f
