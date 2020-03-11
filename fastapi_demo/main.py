@@ -1,7 +1,10 @@
 from fastapi import FastAPI
-from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+
+from fastapi_demo.users import UserStore
 
 origins = [
     "http://localhost",
@@ -19,14 +22,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/web", StaticFiles(directory="fastapi_demo/static", html=True), name="static")
+
+
+userstore = UserStore()
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
 
+@app.get("/users")
+def read_item():
+    return userstore.get_users()
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "q": q}
+
+class User(BaseModel):
+    name: str
+    age: int
+    type: str = "basic"
+
+
+@app.post("/users/")
+def read_item(user: User):
+    return userstore.add_user(user.name, user.age, user.type)

@@ -5,18 +5,38 @@
     <title>Fast API page</title>
 </head>
 <body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
 <script>
 
-     async function setVal(response) {
-         document.getElementById("p1").innerHTML = await response.text();
+    function onSubmit( form ){
+        var data = JSON.stringify( $(form).serializeArray() ); //  <-----------
+        console.log( data );
+        const request = new Request('http://localhost:8000/users/', {method: 'POST', body: data});
+        fetch(request).then(response => {
+    if (response.status === 200) {
+    } else {
+      throw new Error('Something went wrong on api server!');
+    }
+  })
+  .then(response => {
+    console.debug(response);
+    // ...
+  }).catch(error => {
+    console.error(error);
+  });
+        return false; //don't submit
+    }
+
+     async function setVal(response, id) {
+         document.getElementById(id).innerHTML = await response.text();
      }
 
     const request = new Request('http://localhost:8000', {method: 'GET'});
     fetch(request)
   .then(response => {
-       setVal();
     if (response.status === 200) {
-      setVal(response)
+      setVal(response, "p1")
     } else {
       throw new Error('Something went wrong on api server!');
     }
@@ -28,8 +48,40 @@
     console.error(error);
   });
 
+
+    const request2 = new Request('http://localhost:8000/users', {method: 'GET'});
+    fetch(request2)
+  .then(response => {
+    if (response.status === 200) {
+      setVal(response, "users")
+    } else {
+      throw new Error('Something went wrong on api server!');
+    }
+  })
+  .then(response => {
+    console.debug(response);
+    // ...
+  }).catch(error => {
+    console.error(error);
+  });
+
+
 </script>
 <h1>Test page</h1>
+<form action="http://localhost:8000/users/" method="POST" onsubmit="return onSubmit(this)">
+  <div>
+    <label for="name">Name</label>
+    <input name="name" id="name" value="MyName">
+  </div>
+  <div>
+    <label for="age">Age</label>
+    <input name="age" id="age" value="10">
+  </div>
+  <div>
+    <button>Register</button>
+  </div>
+</form>
 <p id="p1">test content</p>
+<div id="users"></div>
 </body>
 </html>
