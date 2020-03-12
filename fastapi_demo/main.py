@@ -1,10 +1,11 @@
+from os import getenv
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 
-
-from fastapi_demo.users import UserStore
+from fastapi_demo.competitors.competitors_store import CompetitorsStore
+from fastapi_demo.competitors.competitor import Competitor, RegistrationModel
 
 origins = [
     "http://localhost",
@@ -12,7 +13,11 @@ origins = [
     "http://127.0.0.1:8000"
 ]
 
-app = FastAPI()
+app = FastAPI(
+    title="BeastyBeastServer",
+    version="0.0.1",
+    description="A game to test your application making skills!"
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,32 +29,25 @@ app.add_middleware(
 
 app.mount("/web", StaticFiles(directory="fastapi_demo/static", html=True), name="static")
 
-
-userstore = UserStore()
+db_port = getenv("BB_DB_PORT")
+if db_port is not None:
+    competitor_store = CompetitorsStore(port=int(db_port))
+else:
+    competitor_store = CompetitorsStore()
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/users/")
+@app.get("/competitors/")
 def read_item():
-    return userstore.get_users()
+    return competitor_store.get_competitors()
 
-@app.delete("/users/")
-def read_item():
-    global userstore
-    old_users = userstore.get_users()
-    userstore = UserStore()
-    return old_users
+@app.delete("/competitors/{id}")
+def read_item(id: str):
+    competitor_store.delete_competitor(id)
 
-
-class User(BaseModel):
-    name: str
-    age: int
-    type: str = "basic"
-
-
-@app.post("/users/")
-def read_item(user: User):
-    return userstore.add_user(user.name, user.age, user.type)
+@app.post("/competitors/")
+def read_item(registration: RegistrationModel):
+    return competitor_store.store_competitor(registration.dict())

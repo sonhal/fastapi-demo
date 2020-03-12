@@ -2,44 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fast API page</title>
+    <title>The BeastyBeast Prog Challenge</title>
     <script src="app.js"></script>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css" integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css" integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous">
 </head>
 <body>
 <div class="content" style="margin: 1em;">
 <div class="pure-g">
   <div class="pure-u-1-1">
-    <h1>Test the dudes page</h1>
+    <h1>Test BeastyBeast Programmer Challenge</h1>
   </div>
   <div class="pure-u-1-5">
-    <form method="POST" onsubmit="return onSubmit(this) " class="pure-form pure-form-stacked">
-          <fieldset>
-        <legend>Add a dude</legend>
-      <div>
-        <label for="name">Name</label>
-        <input name="name" id="name" value="MyName">
-      </div>
-      <div>
-        <label for="age">Age</label>
-        <input name="age" id="age" value="10">
-      </div>
-      <div>
-        <button type="submit" class="pure-button pure-button-primary">Register</button>
-      </div>
-            </fieldset>
+    <form action="" method="POST" onsubmit="return onSubmit(this)" class="pure-form pure-form-stacked">
+      <fieldset>
+        <legend>Register a competition team</legend>
+        <div>
+          <label for="name">Team name</label>
+          <input name="name" id="name" value="MyName">
+        </div>
+        <div>
+          <label for="team_description">Team Description</label>
+          <input name="team_description" id="team_description" value="Team elite HaaXXXXor">
+        </div>
+        <div>
+          <label for="open_port">Team application open port (HTTP)</label>
+          <input name="open_port" id="open_port" value="80">
+        </div>
+        <div>
+          <label for="ip_addr">Team application IP address (IPv4)</label>
+          <input name="ip_addr" id="ip_addr" value="0.0.0.0">
+        </div>
+        <div>
+          <button type="submit" class="pure-button pure-button-primary">Register</button>
+        </div>
+      </fieldset>
     </form>
   </div>
   <div class="pure-u-1-5"></div>
     <div class="pure-u-1-5">
       <img class="pure-img" src="sticker.jpg">
-      <p id="p1">The Dudes</p>
-        <table id="users" class="pure-table">
+      <p id="p1">The Mad Haxxors</p>
+        <table id="competitors" class="pure-table">
           <th>
-            <td>Name</td>
-            <td>Age</td>
-            <td>Type</td>
+            <td>Team Name</td>
+            <td>Team Description</td>
+            <td>Application port</td>
+            <td>Application IP (IPv4)</td>
           </th>
         </table>
     </div>

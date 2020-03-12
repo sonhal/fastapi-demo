@@ -10,6 +10,7 @@ var doPost = (payload, path) => {
     const request = new Request(BACKEND + path, {method: 'POST', body: JSON.stringify(payload)});
         fetch(request).then(response => {
     if (response.status === 200) {
+        console.log(response)
     } else {
       throw new Error('Something went wrong on api server!');
     }
@@ -50,11 +51,13 @@ var onSubmit = ( form ) => {
 
     var payload = {
         name: formData.get("name").toString(),
-        age: parseInt(formData.get("age").toString())
+        team_description: formData.get("team_description").toString(),
+        open_port: formData.get("open_port"),
+        ip_addr: formData.get("ip_addr")
     };
 
     console.log( payload );
-    doPost(payload, "/users/");
+    doPost(payload, "/competitors/");
     updateUsersTable();
     return false; //don't submit
 };
@@ -62,30 +65,34 @@ var onSubmit = ( form ) => {
 function addRow(tableID, userObj) {
   // Get a reference to the table
   let tableRef = document.getElementById(tableID);
-  if(tableRef.rows.length -1> userObj.id) return; // Already in table
-    console.log(tableRef.rows )
+    console.log(tableRef.rows );
 
   // Insert a row at the end of the table
   let newRow = tableRef.insertRow(-1);
 
-  Object.values(userObj).forEach( (el, i) => {
-      let newCell = newRow.insertCell(i);
-      let newText = document.createTextNode(el.toString());
-      newCell.appendChild(newText);
-  });
+  newRow.insertCell(0).appendChild(document.createTextNode(userObj.id.toString()));
+  newRow.insertCell(1).appendChild(document.createTextNode(userObj.name.toString()));
+  newRow.insertCell(2).appendChild(document.createTextNode(userObj.team_description.toString()));
+  newRow.insertCell(3).appendChild(document.createTextNode(userObj.open_port.toString()));
+  newRow.insertCell(4).appendChild(document.createTextNode(userObj.ip_addr.toString()));
 }
 
 var addUsersToTable = async (response) => {
     let body = await response.json();
-    body.forEach( el => {addRow("users", el)})
+    body.forEach( el => {addRow("competitors", el)})
 }
 
 
 var updateUsersTable =  async () => {
-    doGet("/users/", addUsersToTable);
+    doGet("/competitors/", addUsersToTable);
 };
 
 updateUsersTable();
 
+
+function what(form) {
+    console.log("what")
+    return false;
+}
 
 
