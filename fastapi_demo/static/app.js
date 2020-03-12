@@ -1,7 +1,13 @@
 
+var BACKEND = "";
+import('./env.js')
+  .then((module) => {
+    // Do something with the module.
+      BACKEND = module.API_URL
+  });
 
 var doPost = (payload, path) => {
-    const request = new Request('http://localhost:8000' + path, {method: 'POST', body: JSON.stringify(payload)});
+    const request = new Request(BACKEND + path, {method: 'POST', body: JSON.stringify(payload)});
         fetch(request).then(response => {
     if (response.status === 200) {
     } else {
@@ -17,7 +23,7 @@ var doPost = (payload, path) => {
 };
 
 var doGet = (path, callback) => {
-    const request = new Request('http://localhost:8000' + path, {method: 'GET'});
+    const request = new Request(BACKEND + path, {method: 'GET'});
     return fetch(request).then(response => {
     if (response.status === 200) {
         console.log(response);
