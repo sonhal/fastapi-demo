@@ -3,85 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <title>Fast API page</title>
+    <script src="app.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css" integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous">
 </head>
 <body>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-
-<script>
-
-    function onSubmit( form ){
-        var data = JSON.stringify( $(form).serializeArray() ); //  <-----------
-        console.log( data );
-        const request = new Request('http://localhost:8000/users/', {method: 'POST', body: data});
-        fetch(request).then(response => {
-    if (response.status === 200) {
-    } else {
-      throw new Error('Something went wrong on api server!');
-    }
-  })
-  .then(response => {
-    console.debug(response);
-    // ...
-  }).catch(error => {
-    console.error(error);
-  });
-        return false; //don't submit
-    }
-
-     async function setVal(response, id) {
-         document.getElementById(id).innerHTML = await response.text();
-     }
-
-    const request = new Request('http://localhost:8000', {method: 'GET'});
-    fetch(request)
-  .then(response => {
-    if (response.status === 200) {
-      setVal(response, "p1")
-    } else {
-      throw new Error('Something went wrong on api server!');
-    }
-  })
-  .then(response => {
-    console.debug(response);
-    // ...
-  }).catch(error => {
-    console.error(error);
-  });
-
-
-    const request2 = new Request('http://localhost:8000/users', {method: 'GET'});
-    fetch(request2)
-  .then(response => {
-    if (response.status === 200) {
-      setVal(response, "users")
-    } else {
-      throw new Error('Something went wrong on api server!');
-    }
-  })
-  .then(response => {
-    console.debug(response);
-    // ...
-  }).catch(error => {
-    console.error(error);
-  });
-
-
-</script>
-<h1>Test page</h1>
-<form action="http://localhost:8000/users/" method="POST" onsubmit="return onSubmit(this)">
-  <div>
-    <label for="name">Name</label>
-    <input name="name" id="name" value="MyName">
+<div class="content" style="margin: 1em;">
+<div class="pure-g">
+  <div class="pure-u-1-1">
+    <h1>Test the dudes page</h1>
   </div>
-  <div>
-    <label for="age">Age</label>
-    <input name="age" id="age" value="10">
+  <div class="pure-u-1-5">
+    <form action="http://localhost:8000/users/" method="POST" onsubmit="return onSubmit(this) " class="pure-form pure-form-stacked">
+          <fieldset>
+        <legend>Add a dude</legend>
+      <div>
+        <label for="name">Name</label>
+        <input name="name" id="name" value="MyName">
+      </div>
+      <div>
+        <label for="age">Age</label>
+        <input name="age" id="age" value="10">
+      </div>
+      <div>
+        <button type="submit" class="pure-button pure-button-primary">Register</button>
+      </div>
+            </fieldset>
+    </form>
   </div>
-  <div>
-    <button>Register</button>
-  </div>
-</form>
-<p id="p1">test content</p>
-<div id="users"></div>
+  <div class="pure-u-1-5"></div>
+    <div class="pure-u-1-5">
+      <img class="pure-img" src="sticker.jpg">
+      <p id="p1">The Dudes</p>
+        <table id="users" class="pure-table">
+          <th>
+            <td>Name</td>
+            <td>Age</td>
+            <td>Type</td>
+          </th>
+        </table>
+    </div>
+</div>
+</div>
 </body>
 </html>
