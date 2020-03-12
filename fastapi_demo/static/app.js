@@ -82,7 +82,7 @@ var addUsersToTable = async (response) => {
 
 
 var updateUsersTable =  async () => {
-    doGet("/users", addUsersToTable);
+    doGet("/users/", addUsersToTable);
 };
 
 updateUsersTable();

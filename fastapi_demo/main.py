@@ -32,9 +32,16 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/users")
+@app.get("/users/")
 def read_item():
     return userstore.get_users()
+
+@app.delete("/users/")
+def read_item():
+    global userstore
+    old_users = userstore.get_users()
+    userstore = UserStore()
+    return old_users
 
 
 class User(BaseModel):
