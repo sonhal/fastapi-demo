@@ -1,0 +1,22 @@
+version: '3'
+services:
+  bb-server:
+    container_name: bb-server
+    build: .
+    environment:
+      DATABASE_PORT: "28015"
+      DATABASE_HOST: "rethinkdb"
+    depends_on:
+      - rethinkdb
+    ports:
+      - "8080:8080"
+
+  rethinkdb:
+    container_name: rethinkdb
+    image: rethinkdb:latest
+    ports:
+      - "8089:8080"
+      - "29015:29015"
+      - "28015:28015"
+    command: rethinkdb --bind all
+
