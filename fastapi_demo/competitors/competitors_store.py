@@ -1,10 +1,11 @@
+from fastapi_demo.competitors.competitor import CompetitorModel
+
 from fastapi import HTTPException
 from rethinkdb import r
 from rethinkdb.errors import ReqlOpFailedError, ReqlDriverError
 from fastapi.logger import logger
 r.set_loop_type("asyncio")
 
-from fastapi_demo.competitors.competitor import CompetitorModel
 
 class CompetitorsStore:
 

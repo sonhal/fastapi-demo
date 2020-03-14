@@ -17,7 +17,7 @@ origins = [
 
 app = FastAPI(
     title="BeastyBeastServer",
-    version="0.0.1",
+    version="0.0.2",
     description="A game to test your application making skills!"
 )
 
