@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from uuid import uuid4
-from pydantic.networks import IPv4Address
+from ipaddress import IPv4Address
 
 
 class RegistrationModel(BaseModel):
@@ -8,6 +8,15 @@ class RegistrationModel(BaseModel):
     open_port: int
     ip_addr: IPv4Address
     team_description: str
+
+
+class CompetitorModel(BaseModel):
+    name: str
+    open_port: int
+    ip_addr: str                    # To make serialization work out of the box
+    team_description: str
+    points: int
+    challenge_level: int
 
 
 class Competitor:
