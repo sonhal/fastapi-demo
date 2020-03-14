@@ -22,4 +22,4 @@ EXPOSE 8080
 # To make mouting of HTML from static/ in fastapi_demo work
 WORKDIR /app
 
-CMD [".venv/bin/gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--config", "gunicorn_conf.py", "fastapi_demo.main:app"]
+CMD [".venv/bin/gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--config", "gunicorn_conf.py", "fastapi_demo.main:app", "--preload"]
