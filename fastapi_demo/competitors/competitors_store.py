@@ -57,6 +57,7 @@ class CompetitorsStore:
                 logger.error(f"DB request error: {result['first_error']}")
                 raise HTTPException(status_code=500,
                                     detail=f"could not insert record into DB: Competitor({competitor})")
+            return result
         except ReqlOpFailedError as err:
             logger.error(f"DB Error: {err}")
             raise HTTPException(status_code=500,
