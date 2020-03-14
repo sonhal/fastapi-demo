@@ -1,8 +1,10 @@
 from os import getenv
 
 from fastapi import FastAPI
+from fastapi.logger import logger
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.config import Config
 
 from fastapi_demo.competitors.competitors_store import CompetitorsStore
 from fastapi_demo.competitors.competitor import Competitor, RegistrationModel
@@ -29,25 +31,38 @@ app.add_middleware(
 
 app.mount("/web", StaticFiles(directory="fastapi_demo/static", html=True), name="static")
 
-db_port = getenv("BB_DB_PORT")
-if db_port is not None:
-    competitor_store = CompetitorsStore(port=int(db_port))
-else:
-    competitor_store = CompetitorsStore()
+config = Config(".env")
+DATABASE_HOST = config('DATABASE_HOST', cast=str, default="localhost")
+DATABASE_PORT = config('DATABASE_PORT', cast=int, default=32775)
+logger.info(f"DB host: {DATABASE_HOST}, DB port: {DATABASE_PORT}")
+competitor_store = CompetitorsStore(conn_string=DATABASE_HOST, port=DATABASE_PORT)
+
+
+@app.on_event("startup")
+async def startup_event():
+    await competitor_store.setup_db()
+
+
+@app.on_event("shutdown")
+async def startup_event():
+    await competitor_store.close_connection()
+
 
 @app.get("/")
-def read_root():
+async def read_root():
     return {"Hello": "World"}
 
 
 @app.get("/competitors/")
-def read_item():
-    return competitor_store.get_competitors()
+async def read_item():
+    return await competitor_store.get_competitors()
+
 
 @app.delete("/competitors/{id}")
-def read_item(id: str):
-    competitor_store.delete_competitor(id)
+async def read_item(id: str):
+    return await competitor_store.delete_competitor(id)
+
 
 @app.post("/competitors/")
-def read_item(registration: RegistrationModel):
-    return competitor_store.store_competitor(registration.dict())
+async def read_item(registration: RegistrationModel):
+    return await competitor_store.register_competitor(registration)

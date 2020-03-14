@@ -1,48 +1,64 @@
+from fastapi import HTTPException
 from rethinkdb import r
 from rethinkdb.errors import ReqlOpFailedError, ReqlDriverError
-from pydantic.networks import IPv4Address
+from fastapi.logger import logger
+r.set_loop_type("asyncio")
 
+from fastapi_demo.competitors.competitor import CompetitorModel
 
 class CompetitorsStore:
 
-    def __init__(self, conn_string: str = "localhost", port: int = 32775):
+    def __init__(self, conn_string: str, port: int):
         self._conn_string = conn_string
         self._port = port
-        self._db_up = True
-        try:
-            conn = r.connect(conn_string, port)
-            r.db('test').table_create('competitors').run(conn) # setup db
-        except ReqlDriverError as err:
-            print("Could not connect to DB")
-            self._db_up = False
-        except ReqlOpFailedError as ex:
-            print("DB exists")
+        self._db_is_setup = False
+        self._conn = None                               # Connection not setup
 
-    def get_competitors(self):
+    async def setup_db(self):
         try:
-            conn = r.connect(self._conn_string, self._port)
+            self._conn = await r.connect(self._conn_string, self._port)
+            if "competition" not in await r.db_list().run(self._conn):                  # setup db and tables
+                await r.db_create("competition").run(self._conn)
+                await r.db('competition').table_create('competitors').run(self._conn)
+        except ReqlDriverError as err:
+            logger.warning(f"Could not connect to DB: {err}")
+        except ReqlOpFailedError as ex:
+            logger.warning(f"DB creation error: {ex}")
+        self._db_is_setup = True
+
+    async def close_connection(self):
+        await self._conn.close()
+
+    async def get_competitors(self):
+        try:
             competitors = []
-            cursor = r.table("competitors").run(conn)
-            for document in cursor:
+            cursor = await r.db('competition').table("competitors").run(self._conn)
+            async for document in cursor:
                 competitors.append(document)
             return competitors
-        except ReqlDriverError as err:
-            print("Could not connect to DB")
+        except ReqlOpFailedError as err:
+            logger.warning(f"DB Error: {err}")
         return []
 
-    def delete_competitor(self, id: str):
+    async def delete_competitor(self, id: str):
         try:
-            conn = r.connect(self._conn_string, self._port)
-            return r.table("competitors").get(id).delete().run(conn)
-        except ReqlDriverError as err:
-            print("Could not connect to DB")
+            return await r.db('competition').table("competitors").get(id).delete().run(self._conn)
+        except ReqlOpFailedError as err:
+            logger.warning(f"DB Error: {err}")
         return []
 
-    def store_competitor(self, competitor):
+    async def register_competitor(self, registration):
+        as_dict = registration.dict()
+        as_dict["ip_addr"] = str(as_dict["ip_addr"])
+        competitor = CompetitorModel(**as_dict, points=0, challenge_level=1)
         try:
-            conn = r.connect(self._conn_string, self._port)
-            competitor["ip_addr"] = str(competitor["ip_addr"])
-            return r.table("competitors").insert(competitor).run(conn)
-        except ReqlDriverError as err:
-            print("Could not connect to DB")
-        return []
+            result = await r.db('competition').table("competitors").insert(competitor.dict()).run(self._conn)
+            if result["errors"] != 0:
+                logger.error(f"DB request error: {result['first_error']}")
+                raise HTTPException(status_code=500,
+                                    detail=f"could not insert record into DB: Competitor({competitor})")
+        except ReqlOpFailedError as err:
+            logger.error(f"DB Error: {err}")
+            raise HTTPException(status_code=500,
+                                detail=f"could not insert record into DB: Competitor({competitor})")
+
